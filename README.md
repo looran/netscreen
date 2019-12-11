@@ -20,8 +20,8 @@ A web interface is also started on the server (default port 8080) with server st
 # Client side
 
 ```
-client$ netscreen -h
-usage: netscreen [-h] [-v VERBOSE] ip port
+client$ netscreen ptatv.p1sec.intl 3868 -h
+usage: netscreen [-h] [-k] [-v] ip port
 
 netscreen client
 
@@ -31,7 +31,8 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
-  -v VERBOSE  Print verbose messages
+  -k          Kill running netscreen
+  -v          Print verbose messages
 ```
 
 ## Install
@@ -55,7 +56,7 @@ apt install python ffmpeg
 
 ```
 server$ netscreend -h
-usage: netscreend [-h] [-f] [-k] [-v] [-w WEB_PORT] listen_ip listen_port
+usage: netscreend [-h] [-f] [-k] [-v] [-w WEB_PORT] [-B] listen_ip listen_port
 
 netscreen daemon, listens for a video stream and displays it. it also runs a
 small web interface.
@@ -70,6 +71,7 @@ optional arguments:
   -k           Kill running server (default: False)
   -v           Print verbose messages (default: False)
   -w WEB_PORT  Listen port for web interface (default: 8080)
+  -B           Use black background in web interface (default: False)
 ```
 
 ## Install
