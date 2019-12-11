@@ -2,15 +2,15 @@
 
 ## Example usage
 
-The following command on the server 192.168.0.1 starts a daemon waiting for incoming video stream to display :
+The following command on the server 192.168.1.154 starts a daemon waiting for incoming video stream to display :
 
 ```
-server$ netscreend 192.168.0.1 3868
+server$ netscreend 192.168.1.154 3868
 ```
 
-The following command on the client sends a video stream of the current screen to the server 192.168.0.1 :
+The following command on the client sends a video stream of the current screen to the server 192.168.1.154 :
 ```
-client$ netscreen 192.168.0.1 3868
+client$ netscreen 192.168.1.154 3868
 ```
 
 A web interface is also started on the server (default port 8080) with server status and instructions on how to stream from clients:
