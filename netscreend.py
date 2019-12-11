@@ -83,9 +83,9 @@ netscreen {{ ip }} {{ port }}
 </pre>
 or directly <a href="https://www.ffmpeg.org/">ffmpeg</a>:
 <pre>
-ffmpeg -y -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}') \
-    -r 25 -i :0.0 -vcodec h264 -tune zerolatency -preset ultrafast \
-    -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 \
+ffmpeg -y -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}' |head -n1) \\
+    -r 25 -i :0.0 -vcodec h264 -tune zerolatency -preset ultrafast \\
+    -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 \\
     -bufsize 500k -f mpegts {{ proto }}://{{ ip }}:{{ port }}
 </pre>
     <h3>From Windows</h3>

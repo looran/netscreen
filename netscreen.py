@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 loglevel = 'verbose' if args.verbose else 'error'
 
-CMD_FFMPEG = """ffmpeg -y -loglevel __LOGLEVEL__ -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}') -r 25 -i :0.0 -vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://__IP__:__PORT__"""
+CMD_FFMPEG = """ffmpeg -y -loglevel __LOGLEVEL__ -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}' |head -n1) -r 25 -i :0.0 -vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://__IP__:__PORT__"""
 
 cmd = CMD_FFMPEG.replace("__LOGLEVEL__", loglevel).replace("__IP__", args.ip).replace("__PORT__", args.port)
 
