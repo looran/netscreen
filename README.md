@@ -5,12 +5,12 @@
 The following command on the server 192.168.0.1 starts a daemon waiting for incoming video stream to display :
 
 ```
-server$ ./netscreend 192.168.0.1 3868
+server$ netscreend 192.168.0.1 3868
 ```
 
 The following command on the client sends a video stream of the current screen to the server 192.168.0.1 :
 ```
-client$ ./netscreen 192.168.0.1 3868
+client$ netscreen 192.168.0.1 3868
 ```
 
 A web interface is also started on the server (default port 8080) with server status and instructions on how to stream from clients.
@@ -18,7 +18,7 @@ A web interface is also started on the server (default port 8080) with server st
 # Client side
 
 ```
-client$ ./netscreen -h
+client$ netscreen -h
 usage: netscreen [-h] [-v VERBOSE] ip port
 
 netscreen client
@@ -52,7 +52,7 @@ apt install python ffmpeg
 # Server side
 
 ```
-server$ ./netscreend -h
+server$ netscreend -h
 usage: netscreend [-h] [-f] [-k] [-v] [-w WEB_PORT] listen_ip listen_port
 
 netscreen daemon, listens for a video stream and displays it. it also runs a
