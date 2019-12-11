@@ -34,11 +34,27 @@ class Netscreend(object):
     <style>
     pre {
         white-space: pre-wrap;
-        background: lightgrey;
     }
     small {
         font-size: x-small;
     }
+{% if web_black %}
+    body, a {
+        background-color: #101010;
+        color: #cecece;
+    }
+    pre {
+        background-color: #202020;
+    }
+{% else %}
+    body, a {
+        background-color: #efefef;
+        color: #000000;
+    }
+    pre {
+        background: lightgrey;
+    }
+{% endif %}
     </style>
     <title>Netscreend http://{{ ip }}:{{ web_port }}</title>
     <meta http-equiv="refresh" content="5">
@@ -85,12 +101,13 @@ ffmpeg -y -f gdigrab -framerate 30 -i desktop -r 25 ^
 </html>
 """
 
-    def __init__(self, proto, ip, port, web_port, verbose=False):
+    def __init__(self, proto, ip, port, web_port, web_black=False, verbose=False):
         self.state = self.STATE_IDLE
         self.proto = proto
         self.ip = ip
         self.port = port
         self.web_port = web_port
+        self.web_black = web_black
         self.loglevel = logging.DEBUG if verbose else logging.INFO
         self.client_ip = None
         self.ffmpeg_cmd = self.CMD_FFMPEG.replace("__PROTO__", self.proto).replace("__IP__", self.ip).replace("__PORT__", "%s" % self.port)
@@ -122,7 +139,7 @@ ffmpeg -y -f gdigrab -framerate 30 -i desktop -r 25 ^
         self.web = Quart(__name__)
         @self.web.route('/')
         async def web_root():
-            return await templating.render_template_string(self.TEMPLATE_INDEX, proto=self.proto, ip=self.ip, port=self.port, web_port=self.web_port, state=self.state, client_ip=self.client_ip)
+            return await templating.render_template_string(self.TEMPLATE_INDEX, proto=self.proto, ip=self.ip, port=self.port, web_port=self.web_port, web_black=self.web_black, state=self.state, client_ip=self.client_ip)
         @self.web.route('/restart')
         async def web_restart():
             self.ffmpeg_restart()
@@ -187,10 +204,11 @@ parser.add_argument('-f', dest='foreground', action='store_true', help='Run in f
 parser.add_argument('-k', dest='kill', action='store_true', help='Kill running server')
 parser.add_argument('-v', dest='verbose', action='store_true', help='Print verbose messages')
 parser.add_argument('-w', dest='web_port', type=int, default=8080, help='Listen port for web interface')
+parser.add_argument('-B', dest='web_black', action='store_true', help='Use black background in web interface')
 args = parser.parse_args()
 
 if args.kill:
     Netscreend.kill()
 else:
-    nsd = Netscreend("tcp", args.listen_ip, args.listen_port, args.web_port, verbose=args.verbose)
+    nsd = Netscreend("tcp", args.listen_ip, args.listen_port, args.web_port, web_black=args.web_black, verbose=args.verbose)
     nsd.run(args.foreground)
