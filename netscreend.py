@@ -36,6 +36,9 @@ class Netscreend(object):
         white-space: pre-wrap;
         background: lightgrey;
     }
+    small {
+        font-size: x-small;
+    }
     </style>
     <title>Netscreend http://{{ ip }}:{{ web_port }}</title>
     <meta http-equiv="refresh" content="5">
@@ -77,7 +80,7 @@ ffmpeg -y -f gdigrab -framerate 30 -i desktop -r 25 ^
     -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 ^
     -bufsize 500k -f mpegts {{ proto }}://{{ ip }}:{{ port }}
 </pre>
-<small>powered by <a href="https://github.com/looran/netscreen/">netscreen</a></small>
+<small>powered by <a href="https://github.com/looran/netscreen/">netscreend</a></small>
 </body>
 </html>
 """
