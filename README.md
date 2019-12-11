@@ -1,6 +1,6 @@
 netscreen - stream your screen over local network
 
-# Example usage
+## Example usage
 
 The following command on the server 192.168.0.1 starts a daemon waiting for incoming video stream to display :
 
