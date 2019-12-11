@@ -13,7 +13,9 @@ The following command on the client sends a video stream of the current screen t
 client$ netscreen 192.168.0.1 3868
 ```
 
-A web interface is also started on the server (default port 8080) with server status and instructions on how to stream from clients.
+A web interface is also started on the server (default port 8080) with server status and instructions on how to stream from clients:
+
+![netscreend web server](/demo/netscreend_web.png?raw=true "netscreend web server")
 
 # Client side
 
