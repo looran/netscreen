@@ -1,6 +1,6 @@
 netscreen - stream your screen over local network
 
-= Example usage =
+# Example usage
 
 The following command on the server 192.168.0.1 starts a daemon waiting for incoming video stream to display :
 
@@ -15,7 +15,7 @@ client$ ./netscreen 192.168.0.1 3868
 
 A web interface is also started on the server (default port 8080) with server status and instructions on how to stream from clients.
 
-= Client side =
+# Client side
 
 ```
 client$ ./netscreen -h
@@ -32,13 +32,13 @@ optional arguments:
   -v VERBOSE  Print verbose messages
 ```
 
-== Install ==
+## Install
 
 ```
 sudo make install-client
 ```
 
-== Dependencies ==
+## Dependencies
 
 The following software must be installed:
 * python, language in which the client is written
@@ -49,7 +49,7 @@ You can install all the dependecies on Ubuntu with the following commands:
 apt install python ffmpeg
 ```
 
-= Server side =
+# Server side
 
 ```
 server$ ./netscreend -h
@@ -70,13 +70,13 @@ optional arguments:
   -w WEB_PORT  Listen port for web interface (default: 8080)
 ```
 
-== Install ==
+## Install
 
 ```
 sudo make install-server
 ```
 
-== Dependencies ==
+## Dependencies
 
 The following software must be installed:
 * python3, language in which the server is written
