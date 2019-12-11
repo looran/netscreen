@@ -20,7 +20,7 @@ A web interface is also started on the server (default port 8080) with server st
 # Client side
 
 ```
-client$ netscreen ptatv.p1sec.intl 3868 -h
+client$ netscreen -h
 usage: netscreen [-h] [-k] [-v] ip port
 
 netscreen client
