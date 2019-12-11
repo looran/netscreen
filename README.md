@@ -1,4 +1,4 @@
-netscreen - stream your screen over local network
+# netscreen - stream your screen over local network
 
 ## Example usage
 
