@@ -20,14 +20,15 @@ A web interface is also started on the server (default port 8080) with server st
 # Client side
 
 ```
-client$ netscreen -h
-usage: netscreen [-h] [-k] [-v] ip port
+$ netscreen -h
+usage: netscreen [-h] [-k] [-v] ip port [monitor]
 
 netscreen client
 
 positional arguments:
   ip          netscreend server IP address
   port        netscreend server port
+  monitor     monitor output name, or "list"
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -57,7 +58,7 @@ pip install python-xlib
 # Server side
 
 ```
-server$ netscreend -h
+$ netscreend -h
 usage: netscreend [-h] [-f] [-k] [-v] [-w WEB_PORT] [-B] listen_ip listen_port
 
 netscreen daemon, listens for a video stream and displays it. it also runs a
