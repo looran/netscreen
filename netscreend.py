@@ -79,11 +79,13 @@ class Netscreend(object):
         <h3>From Linux</h3>
 Use <a href="https://github.com/looran/netscreen/">netscreen</a>:
 <pre>
-netscreen {{ ip }} {{ port }}
+$ netscreen {{ ip }} {{ port }}
+$ netscreen {{ ip }} {{ port }} HDMI-1
+$ netscreen {{ ip }} {{ port }} list
 </pre>
 or directly <a href="https://www.ffmpeg.org/">ffmpeg</a>:
 <pre>
-ffmpeg -y -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}' |head -n1) \\
+$ ffmpeg -y -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}' |head -n1) \\
     -r 25 -i :0.0 -vcodec h264 -tune zerolatency -preset ultrafast \\
     -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 \\
     -bufsize 500k -f mpegts {{ proto }}://{{ ip }}:{{ port }}
@@ -91,7 +93,7 @@ ffmpeg -y -f x11grab -s $(xrandr |awk '$0 ~ "*" {print $1}' |head -n1) \\
     <h3>From Windows</h3>
 Use <a href="https://www.ffmpeg.org/">ffmpeg</a>:
 <pre>
-ffmpeg -y -f gdigrab -framerate 30 -i desktop -r 25 ^
+> ffmpeg -y -f gdigrab -framerate 30 -i desktop -r 25 ^
     -vf "scale=1920x1080" -vcodec h264 -tune zerolatency -preset ultrafast ^
     -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 ^
     -bufsize 500k -f mpegts {{ proto }}://{{ ip }}:{{ port }}
