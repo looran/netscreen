@@ -46,10 +46,12 @@ sudo make install-client
 The following software must be installed:
 * python, language in which the client is written
 * ffmpeg, video software used for screen streaming
+* python xlib, library for display configuration
 
 You can install all the dependecies on Ubuntu with the following commands:
 ```
 apt install python ffmpeg
+pip install python-xlib
 ```
 
 # Server side
