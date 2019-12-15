@@ -32,6 +32,10 @@ cmd = CMD_FFMPEG.replace("__LOGLEVEL__", loglevel).replace("__IP__", args.ip).re
 monitors = dict()
 monitors_inactive = list()
 primary_monitor = None
+
+if 'DISPLAY' not in os.environ:
+    print("error: DISPLAY variable not set")
+    sys.exit(0)
 display_num = os.environ['DISPLAY']
 d = display.Display(display_num)
 s = d.screen()

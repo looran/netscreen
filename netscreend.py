@@ -104,6 +104,9 @@ Use <a href="https://www.ffmpeg.org/">ffmpeg</a>:
 """
 
     def __init__(self, proto, ip, port, web_port, web_black=False, verbose=False):
+        if 'DISPLAY' not in os.environ:
+            print("error: DISPLAY variable not set")
+            sys.exit(0)
         self.state = self.STATE_IDLE
         self.proto = proto
         self.ip = ip
