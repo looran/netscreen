@@ -60,7 +60,7 @@ class Netscreend(object):
     <meta http-equiv="refresh" content="5">
 </head>
 <body>
-    <h1>Netcreend http://{{ ip }}:{{ web_port }}</h1>
+    <h1>Netscreend http://{{ ip }}:{{ web_port }}</h1>
 
     <h2>Streaming status</h2>
 
