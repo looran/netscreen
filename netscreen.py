@@ -15,7 +15,7 @@ over the network to a netscreend instance.
 netscreen <ip> <port>          : Stream the entire primary monitor
 netscreen <ip> <port> HDMI-1   : Stream the entire HDMI-1 monitor
 netscreen <ip> <port> list     : List active monitors
-netscreen <ip> <port> select   : Select inractively a window to stream
+netscreen <ip> <port> select   : Select interactively a window to stream
 netscreen <ip> <port> 93273232 : Stream window ID 932732
 netscreen <ip> <port> list-win : List all windows
 """
