@@ -62,7 +62,7 @@ The following software must be installed:
 You can install all the dependecies on Ubuntu with the following commands:
 ```
 apt install python3 ffmpeg gstreamer1.0-plugins-good
-pip install python-xlib python-libxdo
+pip3 install python-xlib python-libxdo
 ```
 
 # Server side
