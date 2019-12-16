@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -7,71 +7,132 @@ import subprocess
 
 from Xlib import X, display
 from Xlib.ext import randr
+from xdo import Xdo
 
-CMD_FFMPEG = """ffmpeg -y -loglevel __LOGLEVEL__ -f x11grab -s __SIZE__ -r 25 -i __DISPLAY__ -vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://__IP__:__PORT__"""
+PROGRAM_DESCRIPTION = """netscreen client, captures entire screen or single window and stream it
+over the network to a netscreend instance.
 
-def list_monitors(monitors):
+netscreen <ip> <port>          : Stream the entire primary monitor
+netscreen <ip> <port> HDMI-1   : Stream the entire HDMI-1 monitor
+netscreen <ip> <port> list     : List active monitors
+netscreen <ip> <port> select   : Select inractively a window to stream
+netscreen <ip> <port> 93273232 : Stream window ID 932732
+netscreen <ip> <port> list-win : List all windows
+"""
+
+FRAMERATE = 25
+FFMPEG_OUTPUT = """-vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://{ip}:{port}"""
+CMD_CAPTURE_SCREEN = """ffmpeg -y -loglevel {loglevel} -f x11grab {capture_flags} -s {size_width}x{size_height} -r {framerate} -i {source}""" + " " + FFMPEG_OUTPUT
+CMD_CAPTURE_WINDOW = """gst-launch-1.0 -q ximagesrc xid={source} use-damage=0 {capture_flags} ! video/x-raw,framerate={framerate}/1 ! videoconvert ! filesink location=/dev/stdout |ffmpeg -y -loglevel {loglevel} -f rawvideo -pix_fmt bgra -s:v {size_width}:{size_height} -r {framerate} -i -""" + " " + FFMPEG_OUTPUT
+
+def list_monitors(monitors_list):
     s = "active monitors list:\n"
-    s += '\n'.join([ '    %s: %dx%d+%d+%d%s' % (name, m['width'], m['height'], m['x'], m['y'], " primary" if m['primary'] else "") for name, m in monitors.items() ])
+    s += '\n'.join([ '    %s: %dx%d+%d+%d%s' % (name, m['width'], m['height'], m['x'], m['y'], " primary" if m['primary'] else "") for name, m in monitors_list.items() ])
     s += "\ninactive monitors list:\n"
-    s += '    ' + ' '.join(monitors_inactive)
+    s += '    ' + ' '.join(monitors_list_inactive)
     return s
 
-parser = argparse.ArgumentParser(description='netscreen client')
+def list_windows(windows_list):
+    s = "windows list:\n"
+    for xid in windows_list:
+        s += "%d:\t%s\n" % (xid, xdo.get_window_name(xid))
+    return s
+
+parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument('ip', help='netscreend server IP address')
 parser.add_argument('port', help='netscreend server port')
-parser.add_argument('monitor', nargs='?', help='monitor output name, or "list"')
+parser.add_argument('source', nargs='?', help='monitor name or "list", X window ID or "select" or "list-win"')
 parser.add_argument('-k', dest='kill', action='store_true', help='Kill running netscreen')
+parser.add_argument('-c', dest='hide_cursor', action='store_true', help='Hide mouse cursor')
 parser.add_argument('-v', dest='verbose', action='store_true', help='Print verbose messages')
 args = parser.parse_args()
 
 loglevel = 'verbose' if args.verbose else 'error'
-
-cmd = CMD_FFMPEG.replace("__LOGLEVEL__", loglevel).replace("__IP__", args.ip).replace("__PORT__", args.port)
-
-monitors = dict()
-monitors_inactive = list()
+monitors_list = dict()
+monitors_list_inactive = list()
 primary_monitor = None
 
 if 'DISPLAY' not in os.environ:
     print("error: DISPLAY variable not set")
-    sys.exit(0)
+    sys.exit(1)
+
+# list monitors and get active monitor
 display_num = os.environ['DISPLAY']
 d = display.Display(display_num)
-s = d.screen()
-#w = s.root.create_window(0, 0, 1, 1, 1, s.root_depth)
-w = s.root
-primary_output_id = randr.get_output_primary(w).output
-for output_id in randr.get_screen_resources(w).outputs:
-    o = randr.get_output_info(w, output_id, 0)
+root_window = d.screen().root
+primary_output_id = randr.get_output_primary(root_window).output
+for output_id in randr.get_screen_resources(root_window).outputs:
+    o = randr.get_output_info(root_window, output_id, 0)
     if o.crtc != 0:
-        c = randr.get_crtc_info(w, o.crtc, 0)
-        monitors[o.name] = { 'width': c.width, 'height': c.height, 'x': c.x, 'y': c.y, 'primary': False }
+        c = randr.get_crtc_info(root_window, o.crtc, 0)
+        monitors_list[o.name] = { 'width': c.width, 'height': c.height, 'x': c.x, 'y': c.y, 'primary': False }
         if output_id == primary_output_id:
-            monitors[o.name]['primary'] = True
+            monitors_list[o.name]['primary'] = True
             primary_monitor = o.name
     else:
-        monitors_inactive.append(o.name)
+        monitors_list_inactive.append(o.name)
 
-if args.monitor:
-    if args.monitor == 'list':
-        print(list_monitors(monitors))
+# list windows
+xdo = Xdo()
+windows_list = xdo.search_windows(winname = b'.*')
+windows_list.sort()
+
+# getting informations about monitor / window to capture
+monitor = None
+window = None
+if args.source:
+    try:
+        source_int = int(args.source)
+    except:
+        source_int = None
+    if args.source == 'list':
+        print(list_monitors(monitors_list))
         sys.exit(0)
-    if args.monitor not in monitors:
-        print("error: monitor '%s' not found !" % args.monitor)
-        print(list_monitors(monitors))
+    elif args.source == 'list-win':
+        print(list_windows(windows_list))
         sys.exit(0)
-    monitor = monitors[args.monitor]
+    elif args.source == 'select':
+        window = xdo.select_window_with_click()
+    elif args.source in monitors_list:
+        monitor = monitors_list[args.source]
+    elif source_int is None:
+        print("error: monitor '%s' not found !" % args.source)
+        print(list_monitors(monitors_list))
+        sys.exit(1)
+    elif source_int in windows_list:
+        window = source_int
+    else:
+        print("error: window '%s' not found !" % args.source)
+        print(list_windows(windows_list))
+        sys.exit(2)
 else:
     if primary_monitor is None:
         print("error: primary monitor not found !")
-        print(list_monitors(monitors))
-        sys.exit(0)
-    monitor = monitors[primary_monitor]
-size = "%dx%d" % (monitor['width'], monitor['height'])
-display_spec = "%s+%d,%d" % (display_num, monitor['x'], monitor['y'])
-cmd = cmd.replace("__SIZE__", size).replace("__DISPLAY__", display_spec)
+        print(list_monitors(monitors_list))
+        sys.exit(3)
+    monitor = monitors_list[primary_monitor]
 
+# building ffmpeg / gstreamer streaming command
+capture_flags = ""
+if monitor:
+    cmd = CMD_CAPTURE_SCREEN
+    size_width = monitor['width']
+    size_height = monitor['height']
+    if args.hide_cursor:
+        capture_flags = "-draw_mouse 0"
+    source = "%s+%d,%d" % (display_num, monitor['x'], monitor['y'])
+else:
+    cmd = CMD_CAPTURE_WINDOW
+    size = xdo.get_window_size(window)
+    size_width = size.width
+    size_height = size.height
+    if args.hide_cursor:
+        capture_flags = "show-pointer=0"
+    source = window
+cmd = cmd.format(framerate=FRAMERATE, size_width=size_width, size_height=size_height,
+        loglevel=loglevel, ip=args.ip, port=args.port, source=source, capture_flags=capture_flags)
+
+# execute ffmpeg / gstreamer command
 if args.kill:
     print("[+] killing running netscreen")
     subprocess.call("pkill -f \"%s\"" % cmd, shell=True)

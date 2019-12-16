@@ -21,18 +21,27 @@ A web interface is also started on the server (default port 8080) with server st
 
 ```
 $ netscreen -h
-usage: netscreen [-h] [-k] [-v] ip port [monitor]
+usage: netscreen [-h] [-k] [-c] [-v] ip port [source]
 
-netscreen client
+netscreen client, captures entire screen or single window and stream it
+over the network to a netscreend instance.
+
+netscreen <ip> <port>          : Stream the entire primary monitor
+netscreen <ip> <port> HDMI-1   : Stream the entire HDMI-1 monitor
+netscreen <ip> <port> list     : List active monitors
+netscreen <ip> <port> select   : Select inractively a window to stream
+netscreen <ip> <port> 93273232 : Stream window ID 932732
+netscreen <ip> <port> list-win : List all windows
 
 positional arguments:
   ip          netscreend server IP address
   port        netscreend server port
-  monitor     monitor output name, or "list"
+  source      monitor name or "list", X window ID or "select" or "list-win"
 
 optional arguments:
   -h, --help  show this help message and exit
   -k          Kill running netscreen
+  -c          Hide mouse cursor
   -v          Print verbose messages
 ```
 
@@ -45,14 +54,15 @@ sudo make install-client
 ## Dependencies
 
 The following software must be installed:
-* python, language in which the client is written
-* ffmpeg, video software used for screen streaming
+* python3, language in which the client is written
+* ffmpeg, video software used for screen streaming and whole screen capture
+* gstreamer, only used for capturing a single window
 * python xlib, library for display configuration
 
 You can install all the dependecies on Ubuntu with the following commands:
 ```
-apt install python ffmpeg
-pip install python-xlib
+apt install python3 ffmpeg gstreamer1.0-plugins-good
+pip install python-xlib python-libxdo
 ```
 
 # Server side
@@ -98,4 +108,3 @@ You can install all the dependecies on Ubuntu with the following commands:
 apt install python3 ffmpeg
 pip3 install Quart libtmux psutil daemonize
 ```
-

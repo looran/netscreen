@@ -79,9 +79,12 @@ class Netscreend(object):
         <h3>From Linux</h3>
 Use <a href="https://github.com/looran/netscreen/">netscreen</a>:
 <pre>
-$ netscreen {{ ip }} {{ port }}
-$ netscreen {{ ip }} {{ port }} HDMI-1
-$ netscreen {{ ip }} {{ port }} list
+$ netscreen {{ ip }} {{ port }}          : Stream the entire primary monitor
+$ netscreen {{ ip }} {{ port }} HDMI-1   : Stream the entire HDMI-1 monitor
+$ netscreen {{ ip }} {{ port }} list     : List active monitors
+$ netscreen {{ ip }} {{ port }} select   : Select inractively a window to stream
+$ netscreen {{ ip }} {{ port }} 93273232 : Stream window ID 932732
+$ netscreen {{ ip }} {{ port }} list-win : List all windows
 </pre>
 or directly <a href="https://www.ffmpeg.org/">ffmpeg</a>:
 <pre>
