@@ -22,8 +22,8 @@ netscreen <ip> <port> list-win : List all windows
 
 FRAMERATE = 25
 FFMPEG_OUTPUT = """-vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://{ip}:{port}"""
-CMD_CAPTURE_SCREEN = """ffmpeg -y -loglevel {loglevel} -f x11grab {capture_flags} -s {size_width}x{size_height} -r {framerate} -i {source}""" + " " + FFMPEG_OUTPUT
-CMD_CAPTURE_WINDOW = """gst-launch-1.0 -q ximagesrc xid={source} use-damage=0 {capture_flags} ! video/x-raw,framerate={framerate}/1 ! videoconvert ! filesink location=/dev/stdout |ffmpeg -y -loglevel {loglevel} -f rawvideo -pix_fmt bgra -s:v {size_width}:{size_height} -r {framerate} -i -""" + " " + FFMPEG_OUTPUT
+CMD_CAPTURE_SCREEN = """ffmpeg -y -loglevel {loglevel} -f x11grab{capture_flags} -s {size_width}x{size_height} -r {framerate} -i {source}""" + " " + FFMPEG_OUTPUT
+CMD_CAPTURE_WINDOW = """gst-launch-1.0 -q ximagesrc xid={source} use-damage=0{capture_flags} ! video/x-raw,framerate={framerate}/1 ! videoconvert ! filesink location=/dev/stdout |ffmpeg -y -loglevel {loglevel} -f rawvideo -pix_fmt bgra -s:v {size_width}:{size_height} -r {framerate} -i -""" + " " + FFMPEG_OUTPUT
 
 def list_monitors(monitors_list):
     s = "active monitors list:\n"
@@ -119,7 +119,7 @@ if monitor:
     size_width = monitor['width']
     size_height = monitor['height']
     if args.hide_cursor:
-        capture_flags = "-draw_mouse 0"
+        capture_flags = " -draw_mouse 0"
     source = "%s+%d,%d" % (display_num, monitor['x'], monitor['y'])
 else:
     cmd = CMD_CAPTURE_WINDOW
@@ -127,14 +127,15 @@ else:
     size_width = size.width
     size_height = size.height
     if args.hide_cursor:
-        capture_flags = "show-pointer=0"
+        capture_flags = " show-pointer=0"
     source = window
 cmd = cmd.format(framerate=FRAMERATE, size_width=size_width, size_height=size_height,
         loglevel=loglevel, ip=args.ip, port=args.port, source=source, capture_flags=capture_flags)
 
 # execute ffmpeg / gstreamer command
 if args.kill:
-    print("[+] killing running netscreen")
+    cmd = cmd.replace('+', '\+') # escape '+' for the pgrep/pkill to successfully match the command
+    print("[+] killing running netscreen '%s'" % cmd)
     subprocess.call("pkill -f \"%s\"" % cmd, shell=True)
 else:
     print("[+] running '%s'" % cmd)
