@@ -99,6 +99,8 @@ if args.source:
         sys.exit(0)
     elif args.source == 'select':
         window = xdo.select_window_with_click()
+    elif args.source == 'focus':
+        window = xdo.get_focused_window()
     elif args.source in monitors_list:
         monitor = monitors_list[args.source]
     elif source_int is None:
