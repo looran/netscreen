@@ -47,6 +47,12 @@ parser.add_argument('-c', dest='hide_cursor', action='store_true', help='Hide mo
 parser.add_argument('-v', dest='verbose', action='store_true', help='Print verbose messages')
 args = parser.parse_args()
 
+if args.kill:
+    print("[+] killing running netscreen to %s:%s" % (args.ip, args.port))
+    cmd = "ffmpeg .*" + FFMPEG_OUTPUT.format(ip=args.ip, port=args.port)
+    subprocess.call("pkill -f \"%s\"" % cmd, shell=True)
+    sys.exit(0)
+
 loglevel = 'verbose' if args.verbose else 'error'
 monitors_list = dict()
 monitors_list_inactive = list()
@@ -133,11 +139,6 @@ cmd = cmd.format(framerate=FRAMERATE, size_width=size_width, size_height=size_he
         loglevel=loglevel, ip=args.ip, port=args.port, source=source, capture_flags=capture_flags)
 
 # execute ffmpeg / gstreamer command
-if args.kill:
-    cmd = cmd.replace('+', '\+') # escape '+' for the pgrep/pkill to successfully match the command
-    print("[+] killing running netscreen '%s'" % cmd)
-    subprocess.call("pkill -f \"%s\"" % cmd, shell=True)
-else:
-    print("[+] running '%s'" % cmd)
-    subprocess.call(cmd, shell=True)
+print("[+] running '%s'" % cmd)
+subprocess.call(cmd, shell=True)
 
