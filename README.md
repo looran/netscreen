@@ -27,7 +27,7 @@ over the network to a netscreend instance.
 
 netscreen <ip> <port>          : Stream the entire primary monitor
 netscreen <ip> <port> HDMI-1   : Stream the entire HDMI-1 monitor
-netscreen <ip> <port> list     : List active monitors
+netscreen <ip> <port> list-mon : List active monitors
 netscreen <ip> <port> select   : Select interactively a window to stream
 netscreen <ip> <port> 93273232 : Stream window ID 932732
 netscreen <ip> <port> list-win : List all windows
@@ -35,7 +35,7 @@ netscreen <ip> <port> list-win : List all windows
 positional arguments:
   ip          netscreend server IP address
   port        netscreend server port
-  source      monitor name or "list", X window ID or "select" or "list-win"
+  source      monitor name, list-mon, X window ID, list-win, select, focus
 
 optional arguments:
   -h, --help  show this help message and exit

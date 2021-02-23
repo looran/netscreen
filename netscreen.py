@@ -14,7 +14,7 @@ over the network to a netscreend instance.
 
 netscreen <ip> <port>          : Stream the entire primary monitor
 netscreen <ip> <port> HDMI-1   : Stream the entire HDMI-1 monitor
-netscreen <ip> <port> list     : List active monitors
+netscreen <ip> <port> list-mon : List active monitors
 netscreen <ip> <port> select   : Select interactively a window to stream
 netscreen <ip> <port> 93273232 : Stream window ID 932732
 netscreen <ip> <port> list-win : List all windows
@@ -41,7 +41,7 @@ def list_windows(windows_list):
 parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION, formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument('ip', help='netscreend server IP address')
 parser.add_argument('port', help='netscreend server port')
-parser.add_argument('source', nargs='?', help='monitor name or "list", X window ID or "select" or "list-win"')
+parser.add_argument('source', nargs='?', help='monitor name, list-mon, X window ID, list-win, select, focus')
 parser.add_argument('-k', dest='kill', action='store_true', help='Kill running netscreen')
 parser.add_argument('-c', dest='hide_cursor', action='store_true', help='Hide mouse cursor')
 parser.add_argument('-v', dest='verbose', action='store_true', help='Print verbose messages')
@@ -91,7 +91,7 @@ if args.source:
         source_int = int(args.source)
     except:
         source_int = None
-    if args.source == 'list':
+    if args.source == 'list-mon':
         print(list_monitors(monitors_list))
         sys.exit(0)
     elif args.source == 'list-win':
