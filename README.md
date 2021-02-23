@@ -20,7 +20,6 @@ A web interface is also started on the server (default port 8080) with server st
 # Client side
 
 ```
-$ netscreen -h
 usage: netscreen [-h] [-k] [-c] [-v] ip port [source]
 
 netscreen client, captures entire screen or single window and stream it
