@@ -22,8 +22,8 @@ netscreen <ip> <port> list-win : List all windows
 
 FRAMERATE = 25
 FFMPEG_OUTPUT = """-vcodec h264 -tune zerolatency -preset ultrafast -pix_fmt yuv420p -vprofile main -x264opts keyint=25:min-keyint=25 -bufsize 500k -f mpegts tcp://{ip}:{port}"""
-CMD_CAPTURE_SCREEN = """ffmpeg -y -loglevel {loglevel} -f x11grab{capture_flags} -s {size_width}x{size_height} -r {framerate} -i {source}""" + " " + FFMPEG_OUTPUT
-CMD_CAPTURE_WINDOW = """gst-launch-1.0 -q ximagesrc xid={source} use-damage=0{capture_flags} ! video/x-raw,framerate={framerate}/1 ! videoconvert ! filesink location=/dev/stdout |ffmpeg -y -loglevel {loglevel} -f rawvideo -pix_fmt bgra -s:v {size_width}:{size_height} -r {framerate} -i -""" + " " + FFMPEG_OUTPUT
+CMD_CAPTURE_SCREEN = """ffmpeg -y -loglevel {loglevel} -f x11grab{capture_flags} -s {size_width}x{size_height} -r {framerate} -i {source} -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2'""" + " " + FFMPEG_OUTPUT
+CMD_CAPTURE_WINDOW = """gst-launch-1.0 -q ximagesrc xid={source} use-damage=0{capture_flags} ! video/x-raw,framerate={framerate}/1 ! videoconvert ! filesink location=/dev/stdout |ffmpeg -y -loglevel {loglevel} -f rawvideo -pix_fmt bgra -s:v {size_width}:{size_height} -r {framerate} -i - -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2'""" + " " + FFMPEG_OUTPUT
 
 def list_monitors(monitors_list):
     s = "active monitors list:\n"
